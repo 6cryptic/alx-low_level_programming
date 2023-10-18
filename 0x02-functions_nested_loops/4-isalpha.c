@@ -1,4 +1,4 @@
-#include "holberton.h"
+#include "mai.h"
 /**
  * _isalpha - Check Main
  * @c: An input character
