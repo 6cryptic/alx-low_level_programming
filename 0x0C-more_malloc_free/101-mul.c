@@ -1,126 +1,199 @@
-#include "main.h"
-#include <stdlib.h>
 #include <stdio.h>
-#include <ctype.h>
+#include <stdlib.h>
+
+/*
+ * Task (Advanced) 5. We must accept finite disappointment,
+ * but never lose infinite hope
+ */
+
+int _putchar(char c);
+int print_error(void);
+int is_digit(char *str);
+void mul(char *str1, char *str2);
+int str_length(char *str);
+char *_memset(char *s, char b, unsigned int n);
+void *_calloc(unsigned int nmemb, unsigned int size);
 
 /**
- * _is_zero - determines if any number is zero
- * @argv: argument vector.
- *
- * Return: no return.
- */
-void _is_zero(char *argv[])
+  * main - Multiplies two positive numbers
+  *
+  * @argc: Input the argument number (int)
+  * @argv: Input the Argument vector (char)
+  *
+  * Return: 0 if success, 98 if fail
+  */
+
+int main(int argc, char *argv[])
 {
-	int i, isn1 = 1, isn2 = 1;
+	/* Pointer declarations */
+	char *num1 = argv[1];
+	char *num2 = argv[2];
 
-	for (i = 0; argv[1][i]; i++)
-		if (argv[1][i] != '0')
-		{
-			isn1 = 0;
-			break;
-		}
+	/* Checking if the number of arguments correct */
+	if (argc != 3 || is_digit(num1) || is_digit(num2))
+		print_error();
 
-	for (i = 0; argv[2][i]; i++)
-		if (argv[2][i] != '0')
-		{
-			isn2 = 0;
-			break;
-		}
-
-	if (isn1 == 1 || isn2 == 1)
+	/* In case the two arguments are empty */
+	if (*num1 == '0' || *num2 == '0')
 	{
-		printf("0\n");
-		exit(0);
+		_putchar('0');
+		_putchar('\n');
 	}
+	/* In case are digits */
+	else
+		mul(num1, num2);
+	return (0);
 }
 
 /**
- * _initialize_array - set memery to zero in a new array
- * @ar: char array.
- * @lar: length of the char array.
- *
- * Return: pointer of a char array.
- */
-char *_initialize_array(char *ar, int lar)
+  * print_error - Prints the error message
+  *
+  * Return: the functions exit()
+  */
+
+int print_error(void)
+{
+	/* Pointer and loop variables declarations */
+	char *str;
+	int i;
+
+	/* Print error message */
+	str = "Error";
+	for (i = 0; str[i] != '\0'; i++)
+		_putchar(str[i]);
+	_putchar('\n');
+	exit(98);
+}
+
+/**
+  * is_digit - Checks if the string is digit or no
+  *
+  * @str: Input pointer string (char)
+  *
+  * Return: Always 0 (Success)
+  */
+
+int is_digit(char *str)
+{
+	/* Check if the string is a number */
+	while (*str != '\0')
+	{
+		if (*str < '0' || *str > '9')
+			return (1);
+		str++;
+	}
+	return (0);
+}
+
+/**
+  * mul - Multiplies two integers
+  *
+  * @str1: Input first string (char)
+  * @str2: Input second string (char)
+  *
+  * Return: None
+  */
+
+void mul(char *str1, char *str2)
+{
+	/* Pointers and loops and variables declarations */
+	int i, len1, len2, total_length, digit1, digit2, result = 0, tmp;
+	char *ptr;
+	void *temp;
+
+	len1 = str_length(str1);
+	len2 = str_length(str2);
+	tmp = len2;
+	total_length = len1 + len2;
+	/* Allocate memory */
+	ptr = _calloc(sizeof(int), total_length);
+	temp = ptr;
+
+	for (len1--; len1 >= 0; len1--)
+	{
+		digit1 = str1[len1] - '0';
+		result = 0;
+		len2 = tmp;
+		for (len2--; len2 >= 0; len2--)
+		{
+			digit2 = str2[len2] - '0';
+			result += ptr[len2 + len1 + 1] + (digit1 * digit2);
+			ptr[len1 + len2 + 1] = result % 10;
+			result /= 10;
+		}
+		if (result)
+			ptr[len1 + len2 + 1] = result % 10;
+	}
+	while (*ptr == 0)
+	{
+		ptr++;
+		total_length--;
+	}
+	for (i = 0; i < total_length; i++)
+		printf("%i", ptr[i]);
+	printf("\n");
+	free(temp);
+}
+
+/**
+  * str_length - Countes the number of characters
+  *
+  * @str: Input the string (char)
+  *
+  * Return: The value of 'i'
+  */
+
+int str_length(char *str)
 {
 	int i = 0;
 
-	for (i = 0; i < lar; i++)
-		ar[i] = '0';
-	ar[lar] = '\0';
-	return (ar);
+	while (str[i] != '\0')
+		i++;
+	return (i);
 }
 
 /**
- * _checknum - determines length of the number
- * and checks if number is in base 10.
- * @argv: arguments vector.
- * @n: row of the array.
- *
- * Return: length of the number.
- */
-int _checknum(char *argv[], int n)
+  * _memset - Fills memory with constant Bytes
+  *
+  * @s: Input pointer string (char)
+  * @b: Input character (char)
+  * @n: Input the number of Bytes (int)
+  *
+  * Return: The value of 's'
+  */
+
+char *_memset(char *s, char b, unsigned int n)
 {
-	int ln;
+	unsigned int i = 0;
 
-	for (ln = 0; argv[n][ln]; ln++)
-		if (!isdigit(argv[n][ln]))
-		{
-			printf("Error\n");
-			exit(98);
-		}
-
-	return (ln);
-}
-
-/**
- * main - Entry point.
- * program that multiplies two positive numbers.
- * @argc: number of arguments.
- * @argv: arguments vector.
- *
- * Return: 0 - success.
- */
-int main(int argc, char *argv[])
-{
-	int ln1, ln2, lnout, add, addl, i, j, k, ca;
-	char *nout;
-
-	if (argc != 3)
-		printf("Error\n"), exit(98);
-	ln1 = _checknum(argv, 1), ln2 = _checknum(argv, 2);
-	_is_zero(argv), lnout = ln1 + ln2, nout = malloc(lnout + 1);
-	if (nout == NULL)
-		printf("Error\n"), exit(98);
-	nout = _initialize_array(nout, lnout);
-	k = lnout - 1, i = ln1 - 1, j = ln2 - 1, ca = addl = 0;
-	for (; k >= 0; k--, i--)
+	while (i < n)
 	{
-		if (i < 0)
-		{
-			if (addl > 0)
-			{
-				add = (nout[k] - '0') + addl;
-				if (add > 9)
-					nout[k - 1] = (add / 10) + '0';
-				nout[k] = (add % 10) + '0';
-			}
-			i = ln1 - 1, j--, addl = 0, ca++, k = lnout - (1 + ca);
-		}
-		if (j < 0)
-		{
-			if (nout[0] != '0')
-				break;
-			lnout--;
-			free(nout), nout = malloc(lnout + 1), nout = _initialize_array(nout, lnout);
-			k = lnout - 1, i = ln1 - 1, j = ln2 - 1, ca = addl = 0;
-		}
-		if (j >= 0)
-		{
-			add = ((argv[1][i] - '0') * (argv[2][j] - '0')) + (nout[k] - '0') + addl;
-			addl = add / 10, nout[k] = (add % 10) + '0';
-		}
+		s[i] = b;
+		i++;
 	}
-	printf("%s\n", nout);
-	return (0);
+	return (s);
+}
+
+/**
+  * _calloc - Allocates memory for an array of' nmemb' elements of 'size' bytes
+  * each and returns a pointer to the allocated memory
+  *
+  * @nmemb: Input number of elements (int)
+  * @size: Input  size of bytes (int)
+  *
+  * Return: The pointer to the allocated memory
+  */
+
+void *_calloc(unsigned int nmemb, unsigned int size)
+{
+	char *ptr;
+
+	if (nmemb == 0 || size == 0)
+		return (NULL);
+	ptr = malloc(nmemb * size);
+	if (ptr == NULL)
+		return (NULL);
+	_memset(ptr, 0, nmemb * size);
+
+	return (ptr);
 }
